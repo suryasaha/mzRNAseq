@@ -1,3 +1,8 @@
+#shell
+#grep -v '^jgi' counts.txt > maize_counts.txt
+#cut --complement -f 2,3,19,20,22  maize_counts.txt > maize_counts_noaxenic.txt
+
+
 mzCounts <- read.delim("maize_counts_noaxenic_noheader.txt",header=FALSE,row.names=1)
 coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib
 mzCountsCln = subset(mzCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf[4] & V6>coltf[5] & V7>coltf[6] & V8>coltf[7] & V9>coltf[8]& V10>coltf[9]& V11>coltf[10]& V12>coltf[11]& V13>coltf[12]& V14>coltf[13]& V15>coltf[14]& V16>coltf[15]& V17>coltf[16]& V18>coltf[17]& V19>coltf[18]& V20>coltf[19]& V21>coltf[20]& V22>coltf[21]& V23>coltf[22]& V24>coltf[23]& V25>coltf[24])
