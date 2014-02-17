@@ -58,10 +58,10 @@ write.csv(dge_10_tt$table, file="fungi_10d_alltags_edgeR.csv")
 
 #shell
 # awk -F"," '{if($4 < .05) print }' fungi_3d_alltags_edgeR.csv | wc -l
-#1091
+#733
 # awk -F"," '{if($4 < .05) print }' fungi_5d_alltags_edgeR.csv | wc -l
-#1485
+#1187
 # awk -F"," '{if($4 < .05) print }' fungi_7d_alltags_edgeR.csv | wc -l
-#1407
+#1124
 # awk -F"," '{if($4 < .05) print }' fungi_10d_alltags_edgeR.csv | wc -l
-#1333
+#1082
