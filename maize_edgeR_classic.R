@@ -1,3 +1,5 @@
+#63540 maize genes in 24 diff conditions ( 4 time points x 3 reps x ( 1 expt + 1 control )).
+
 #shell
 #grep -v '^jgi' counts.txt > maize_counts.txt
 #cut --complement -f 2,3,19,20,22  maize_counts.txt > maize_counts_noaxenic.txt
@@ -5,11 +7,12 @@
 
 mzCounts <- read.delim("maize_counts_noaxenic_noheader.txt",header=FALSE,row.names=1)
 coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib
+#filter out low counts
 mzCountsCln = subset(mzCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf[4] & V6>coltf[5] & V7>coltf[6] & V8>coltf[7] & V9>coltf[8]& V10>coltf[9]& V11>coltf[10]& V12>coltf[11]& V13>coltf[12]& V14>coltf[13]& V15>coltf[14]& V16>coltf[15]& V17>coltf[16]& V18>coltf[17]& V19>coltf[18]& V20>coltf[19]& V21>coltf[20]& V22>coltf[21]& V23>coltf[22]& V24>coltf[23]& V25>coltf[24])
 groups<- c("3d", "3d", "7d", "7d", "3dctrl", "10dctrl", "3dctrl", "10dctrl", "3d", "10d", "5dctrl", "3dctrl", "10dctrl", "10d", "10d", "7d", "5d", "5d", "5dctrl", "5dctrl", "7dctr", "7dctrl", "7dctrl", "5d")
 
 hist(coltcln, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample")
-barplot(coltcln,names.arg=sort(group), xlab="Library name", ylab="Read count",las=2,col="yellow",main="Number of million reads mapped per sample")
+barplot(coltcln,names.arg=sort(groups), xlab="Library name", ylab="Read count",las=2,col="yellow",main="Number of million reads mapped per sample")
 
 dge <- DGEList(count=mzCountsCln,group=groups)
 dge <- calcNormFactors(dge) # normalize libs to prevent over expressed genes from blanking out rest
@@ -45,7 +48,7 @@ dge_7_tt = topTags(dge_7,n=nrow(dge_7))
 dge_10_tt = topTags(dge_10,n=nrow(dge_10))
 
 dge_nc <- cpm(dge,normalized.lib.sizes=TRUE) #Computes counts per million (CPM)
-head(dge_nc[rownames(dge_3_tt$table),order(group)],5) # depth-adjusted reads per million for some of the top 5 differentially expressed genes
+head(dge_nc[rownames(dge_3_tt$table),order(groups)],5) # depth-adjusted reads per million for some of the top 5 differentially expressed genes
 
 plotSmear(dge,de.tags=rownames(dge_3_tt$table$FDR < .05),main="3days, log-Fold Change versus log-Concentration for FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="5days, log-Fold Change versus log-Concentration for FDR < .05")
