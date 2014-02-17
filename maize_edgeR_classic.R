@@ -1,4 +1,4 @@
-#63540 maize genes in 24 diff conditions ( 4 time points x 3 reps x ( 1 expt + 1 control )).
+#63540 maize transcripts in 24 diff conditions ( 4 time points x 3 reps x ( 1 expt + 1 control )).
 
 #shell
 #grep -v '^jgi' counts.txt > maize_counts.txt
@@ -12,12 +12,12 @@ mzCountsCln = subset(mzCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf
 groups<- c("3d", "3d", "7d", "7d", "3dctrl", "10dctrl", "3dctrl", "10dctrl", "3d", "10d", "5dctrl", "3dctrl", "10dctrl", "10d", "10d", "7d", "5d", "5d", "5dctrl", "5dctrl", "7dctr", "7dctrl", "7dctrl", "5d")
 
 hist(coltcln, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample")
-barplot(coltcln,names.arg=sort(groups), xlab="Library name", ylab="Read count",las=2,col="yellow",main="Number of million reads mapped per sample")
+barplot(coltcln,names.arg=groups, xlab="Library name", ylab="Read count",las=2,col="yellow",main="Number of million reads mapped per sample")
 
 dge <- DGEList(count=mzCountsCln,group=groups)
 dge <- calcNormFactors(dge) # normalize libs to prevent over expressed genes from blanking out rest
-
-barplot(dge$counts,names.arg=sort(groups),las=2,main="Normalized maize counts per library")
+#REDO barplots, err in x labels due to sorted groups
+barplot(dge$counts,names.arg=groups,las=2,main="Normalized maize counts per library")
 plotMDS(dge,labels=groups,col=c("darkblue","lightblue","darkgreen","lightgreen","darkred","red","black","gray")[factor(groups)]) #diff colors for each group
 
 dge <- estimateCommonDisp(dge) # Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all tags
