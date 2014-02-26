@@ -13,6 +13,7 @@ coltf = floor(colSums(fnCounts) /1e06) #mill reads per lib
 hist(coltf, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample")
 
 #filter out low counts
+#removing reads with < 1 read/million reads in library
 fnCountsCln = subset(fnCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf[4] & V6>coltf[5] & V7>coltf[6] & V8>coltf[7] & V9>coltf[8]& V10>coltf[9]& V11>coltf[10]& V12>coltf[11]& V13>coltf[12]& V14>coltf[13]& V15>coltf[14]& V16>coltf[15])
 coltfcln = floor(colSums(fnCountsCln) /1e06) #mill reads per lib
 hist(coltfcln, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample after removing low counts")
