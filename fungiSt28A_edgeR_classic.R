@@ -1,3 +1,7 @@
+# PPath@Cornell
+# Surya Saha ss2489@cornell.edu
+# Feb 17, 2014
+
 #11702 fungal transcripts in 4 timepoints x 3 reps and 1 axenic x 3 reps
 
 #shell
