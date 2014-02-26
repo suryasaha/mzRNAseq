@@ -1,3 +1,8 @@
+# PPath@Cornell
+# Surya Saha ss2489@cornell.edu
+# Feb 15, 2014
+
+
 #63540 maize transcripts in 24 diff conditions ( 4 time points x 3 reps x ( 1 expt + 1 control )).
 
 #shell
