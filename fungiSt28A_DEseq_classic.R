@@ -17,6 +17,7 @@ design = data.frame(row.names = colnames (fnCounts),
 
 #filtering: DESeq suggests using a quantile method. Instead I'll use the method used with edgeR for comparison purposes.
 #removing genes with < 1 read/million reads in every library, 15 libs
+library("edgeR")
 keep = rowSums ( cpm(fnCounts)>1) >= 15
 dim(fnCounts[keep, ]) 
 #[1] 3597   15
@@ -48,8 +49,15 @@ cdsFullBlind = estimateDispersions(cds, method = "blind")
 #Error in parametricDispersionFit(means, disps) : 
 #  Parametric dispersion fit failed. Try a local fit and/or a pooled estimation. (See '?estimateDispersions')
 cdsFullBlindLocal = estimateDispersions(cds, method = "blind",fitType="local") #Used the locfit package to fit a dispersion-mean relation due to error
+#https://stat.ethz.ch/pipermail/bioconductor/2012-March/044230.html
+cdsFullBlindLocalfitonly = estimateDispersions(cds, method = "blind",sharingMode="fit-only",fitType="local")
+
 vsdFullLocal = varianceStabilizingTransformation (cdsFullBlindLocal)
+vsdFullLocalfitonly = varianceStabilizingTransformation (cdsFullBlindLocalfitonly)
+
 plotPCA(vsdFullLocal,intgroup=c("condition","libType"))
+#same plot, no benefit using sharingMode param
+plotPCA(vsdFullLocalfitonly,intgroup=c("condition","libType"))
 
 #For Est Disps
 cds = estimateDispersions(cds)
