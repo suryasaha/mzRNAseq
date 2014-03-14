@@ -79,17 +79,12 @@ de <- rownames(top[top$FDR<0.05,])
 plot(top$logFC, -log10(top$PValue), pch=20, cex=.5, ylab="-log10(p-value)", 
      xlab="logFC", main="day 3 DE genes", col=as.numeric(rownames(top) %in% de)+1)
 abline(v=c(-2, 2), col=colors[2])
-
 # gene to gene heatmap
 library(gplots)
 heatmap.2(log(normCounts[de[1:500],]+1), ColSideColor=colors[groups],
-          labCol=groups, main="All St28A  genes FDR < 0.05")
-
-#heatmap of dataset to dataset TODOmaybe
-# dists = dist( t( exprs(dge) ) )
-# mat = as.matrix( dists )
-# rownames(mat) = colnames(mat) = with(pData(cdsFullBlindLocal), paste(rownames(design), design$condition, sep=" : "))
-# heatmap.2(mat, trace="none", col = rev(redblue(75)), margin=c(13, 13)
+          labCol=groups, main="St28A genes DE on day 3 FDR < 0.05", labRow=NA)
+heatmap.2(log(normCounts), ColSideColor=colors[groups],
+          labCol=groups, main="All St28A  genes", labRow=NA)
 
 write.csv(dge_3_tt$table, file="fungi_3d_alltags_edgeR.csv")
 write.csv(dge_5_tt$table, file="fungi_5d_alltags_edgeR.csv")
