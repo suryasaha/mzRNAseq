@@ -26,6 +26,9 @@ barplot(coltfcln,names.arg=groups, xlab="Library name", ylab="Read count",las=2,
 #edgeR
 library("edgeR")
 dge <- DGEList(count=fnCountsCln,group=groups)
+names(dge)
+#[1] "counts"             "samples"            "common.dispersion"  "pseudo.counts"      "AveLogCPM"         
+#[6] "pseudo.lib.size"    "prior.n"            "tagwise.dispersion"
 dge <- calcNormFactors(dge) # normalize libs to prevent over expressed genes from blanking out rest
 barplot(dge$counts,names.arg=groups,las=2,main="Normalized fungal counts per library")
 plotMDS(dge,labels=groups,col=c("darkblue","darkgreen","darkred","black","orange")[factor(groups)]) #diff colors for each group
@@ -35,7 +38,9 @@ dge <- estimateTagwiseDisp(dge) # Estimates tagwise dispersion values by an empi
 plotMeanVar(dge,show.tagwise.vars=TRUE,NBline=TRUE) #each dot represents the estimated mean and variance for each gene, with binned variances as well as the trended common dispersion overlaid. Explore the mean-variance relationship for DGE data
 plotBCV(dge) #Biological Coefficient of Variation
 
-dge_3 = exactTest(dge,pair=c('3d','axenic'))# Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts
+# Compute genewise exact tests for differences in the means between 
+# two groups of negative-binomially distributed counts
+dge_3 = exactTest(dge,pair=c('3d','axenic'))
 #Warning message:
 #In mglmOneGroup(y, dispersion = dispersion, offset = offset) :
 #  max iteractions exceeded for 1 tags
@@ -57,11 +62,12 @@ plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="Fungi 5days, log-
 plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="Fungi 7days, log-Fold Change versus log-Concentration for FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="Fungi 10days, log-Fold Change versus log-Concentration for FDR < .05")
 
+
 #DEseq code TO TEST
 #heatmap of genes
 library("RColorBrewer")
 library ("gplots")
-select = order(rowMeans(counts(dge)), decreasing = TRUE)[1:3000]  
+select = order(rowMeans((dge$counts)), decreasing = TRUE)[1:3000]  
 hmcol = colorRampPalette(brewer.pal(8, "GnBu"))(100)
 heatmap.2(exprs(vsdFullLocal)[select,], col = hmcol, trace="none", margin=c(10,6),labRow=NA)
 heatmap.2(exprs(vsdFullLocal)[select,], col = redblue(75), trace="none", margin=c(10,6),labRow=NA,labCol=design$condition)
