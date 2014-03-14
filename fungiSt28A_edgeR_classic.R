@@ -62,21 +62,34 @@ plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="Fungi 5days, log-
 plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="Fungi 7days, log-Fold Change versus log-Concentration for FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="Fungi 10days, log-Fold Change versus log-Concentration for FDR < .05")
 
+#VIZ
 
-#DEseq code TO TEST
-#heatmap of genes
-library("RColorBrewer")
-library ("gplots")
-select = order(rowMeans((dge$counts)), decreasing = TRUE)[1:3000]  
-hmcol = colorRampPalette(brewer.pal(8, "GnBu"))(100)
-heatmap.2(exprs(vsdFullLocal)[select,], col = hmcol, trace="none", margin=c(10,6),labRow=NA)
-heatmap.2(exprs(vsdFullLocal)[select,], col = redblue(75), trace="none", margin=c(10,6),labRow=NA,labCol=design$condition)
+#http://cgrlucb.wikispaces.com/edgeR+spring2013
+colors <- brewer.pal(9, "Set1")
 
-#heatmap of dataset to dataset
-dists = dist( t( exprs(vsdFullLocal) ) )
-mat = as.matrix( dists )
-rownames(mat) = colnames(mat) = with(pData(cdsFullBlindLocal), paste(rownames(design), design$condition, sep=" : "))
-heatmap.2(mat, trace="none", col = rev(redblue(75)), margin=c(13, 13)
+#If we want the normalized pseudo-counts, useful for instance for cluster analysis,
+scale = dge$samples$lib.size*dge$samples$norm.factors
+normCounts = round(t(t(dge$counts)/scale)*mean(scale))
+boxplot(log2(normCounts+1), las=2, col=colors[dge$samples$group],names=groups,main="Normalized counts")
+
+# day3
+top <- topTags(dge_3, n=nrow(cds$counts))$table
+de <- rownames(top[top$FDR<0.05,])
+#volcano plot 
+plot(top$logFC, -log10(top$PValue), pch=20, cex=.5, ylab="-log10(p-value)", 
+     xlab="logFC", main="day 3 DE genes", col=as.numeric(rownames(top) %in% de)+1)
+abline(v=c(-2, 2), col=colors[2])
+
+# gene to gene heatmap
+library(gplots)
+heatmap.2(log(normCounts[de[1:500],]+1), ColSideColor=colors[groups],
+          labCol=groups, main="All St28A  genes FDR < 0.05")
+
+#heatmap of dataset to dataset TODOmaybe
+# dists = dist( t( exprs(dge) ) )
+# mat = as.matrix( dists )
+# rownames(mat) = colnames(mat) = with(pData(cdsFullBlindLocal), paste(rownames(design), design$condition, sep=" : "))
+# heatmap.2(mat, trace="none", col = rev(redblue(75)), margin=c(13, 13)
 
 write.csv(dge_3_tt$table, file="fungi_3d_alltags_edgeR.csv")
 write.csv(dge_5_tt$table, file="fungi_5d_alltags_edgeR.csv")
