@@ -24,6 +24,7 @@ groups<- c("3d", "3d", "7d", "7d", "3d", "10d", "10d", "10d", "axenic", "axenic"
 barplot(coltfcln,names.arg=groups, xlab="Library name", ylab="Read count",las=2,col="yellow",main="Number of million reads mapped per sample")
 
 #edgeR
+library("edgeR")
 dge <- DGEList(count=fnCountsCln,group=groups)
 dge <- calcNormFactors(dge) # normalize libs to prevent over expressed genes from blanking out rest
 barplot(dge$counts,names.arg=groups,las=2,main="Normalized fungal counts per library")
@@ -55,6 +56,21 @@ plotSmear(dge,de.tags=rownames(dge_3_tt$table$FDR < .05),main="Fungi 3days, log-
 plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="Fungi 5days, log-Fold Change versus log-Concentration for FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="Fungi 7days, log-Fold Change versus log-Concentration for FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="Fungi 10days, log-Fold Change versus log-Concentration for FDR < .05")
+
+#DEseq code TO TEST
+#heatmap of genes
+library("RColorBrewer")
+library ("gplots")
+select = order(rowMeans(counts(dge)), decreasing = TRUE)[1:3000]  
+hmcol = colorRampPalette(brewer.pal(8, "GnBu"))(100)
+heatmap.2(exprs(vsdFullLocal)[select,], col = hmcol, trace="none", margin=c(10,6),labRow=NA)
+heatmap.2(exprs(vsdFullLocal)[select,], col = redblue(75), trace="none", margin=c(10,6),labRow=NA,labCol=design$condition)
+
+#heatmap of dataset to dataset
+dists = dist( t( exprs(vsdFullLocal) ) )
+mat = as.matrix( dists )
+rownames(mat) = colnames(mat) = with(pData(cdsFullBlindLocal), paste(rownames(design), design$condition, sep=" : "))
+heatmap.2(mat, trace="none", col = rev(redblue(75)), margin=c(13, 13)
 
 write.csv(dge_3_tt$table, file="fungi_3d_alltags_edgeR.csv")
 write.csv(dge_5_tt$table, file="fungi_5d_alltags_edgeR.csv")
