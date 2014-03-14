@@ -81,8 +81,8 @@ plot(top$logFC, -log10(top$PValue), pch=20, cex=.5, ylab="-log10(p-value)",
 abline(v=c(-2, 2), col=colors[2])
 # gene to gene heatmap
 library(gplots)
-heatmap.2(log(normCounts[de[1:500],]+1), ColSideColor=colors[groups],
-          labCol=groups, main="St28A genes DE on day 3 FDR < 0.05", labRow=NA)
+heatmap.2(log(normCounts[de[1:400],]+1), ColSideColor=colors[groups],
+          labCol=groups, main="Top 400 St28A genes DE \non day 3 FDR < 0.05", labRow=NA)
 heatmap.2(log(normCounts), ColSideColor=colors[groups],
           labCol=groups, main="All St28A  genes", labRow=NA)
 
