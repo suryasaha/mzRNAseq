@@ -22,5 +22,5 @@ library("lattice")
 levelplot(cor(counts[,collabels_ord]), aspect="iso", scales=list(x=list(rot=90)),main="Correlation Matrix", cuts=50)
 
 library("corrplot")
-corrplot(cor(counts[,collabels_ord]), method="square", tl.col="black", addgrid.col="black", is.corr=FALSE)
+corrplot(cor(counts[,collabels_ord]), method="square", tl.col="black", addgrid.col="black", is.corr=FALSE, main="St28a raw counts")
 corrplot(cor(counts[,c("3d1","3d2","3d3","3dctrl1","3dctrl2","3dctrl3")]), method="square", tl.col="black", addgrid.col="black", is.corr=FALSE)
