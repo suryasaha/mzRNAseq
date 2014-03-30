@@ -11,6 +11,44 @@
 
 
 mzCounts <- read.delim("maize_counts_noaxenic_noheader.txt",header=FALSE,row.names=1)
+hist(floor(colSums(mzCounts)), labels=TRUE,xlab="Reads in sample",
+     main="Histogram of reads mapped per sample")
+coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib
+hist(coltm, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample")
+
+#filter out low counts
+#removing reads with < 1 read/million reads in library
+mzCountsCln = subset(mzCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf[4] 
+                     & V6>coltf[5] & V7>coltf[6] & V8>coltf[7] & V9>coltf[8]& V10>coltf[9]& 
+                       V11>coltf[10]& V12>coltf[11]& V13>coltf[12]& V14>coltf[13]& 
+                       V15>coltf[14]& V16>coltf[15]& V17>coltf[16]& V18>coltf[17]& 
+                       V19>coltf[18]& V20>coltf[19]& V21>coltf[20]& V22>coltf[21]& 
+                       V23>coltf[22]& V24>coltf[23]& V25>coltf[24])
+
+collabels = c("3d1", "3d2", "7d1", "7d2","3dctrl1", "10dctrl1", "3dctrl2", 
+              "10dctrl2", "3d3", "10d1", "5dctrl1", "3dctrl3", "10dctrl3", 
+              "10d2", "10d3", "7d3", "5d1", "5d2", "5dctrl2", "5dctrl3", 
+              "7dctrl1", "7dctrl2", "7dctrl3", "5d3")
+colnames(mzCounts) = collabels
+colnames(mzCountsCln) = collabels
+collabels_ord = c("3d1", "3d2", "3d3", "3dctrl1", "3dctrl2" ,"3dctrl3", 
+                  "5d1", "5d2", "5d3", "5dctrl1", "5dctrl2" ,"5dctrl3", 
+                  "7d1", "7d2", "7d3", "7dctrl1", "7dctrl2" ,"7dctrl3", 
+                  "10d1", "10d2", "10d3", "10dctrl1", "10dctrl2" ,"10dctrl3")
+
+#correlation matrix
+library("lattice")
+levelplot(cor(mzCounts[,collabels_ord]), aspect="iso", scales=list(x=list(rot=90)),main="Correlation Matrix", cuts=50)
+library("corrplot")
+corrplot(cor(mzCounts[,collabels_ord]), method="square", tl.col="black", 
+         addgrid.col="black", is.corr=FALSE, main="Maize raw counts",outer=TRUE)
+corrplot(cor(mzCountsCln[,collabels_ord]), method="square", tl.col="black", 
+         addgrid.col="black", is.corr=FALSE, main="Maize filtered counts")
+
+
+
+## OLD TODO
+
 coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib
 #filter out low counts
 mzCountsCln = subset(mzCounts,V2>coltf[1] & V3>coltf[2] & V4>coltf[3] & V5>coltf[4] & V6>coltf[5] & V7>coltf[6] & V8>coltf[7] & V9>coltf[8]& V10>coltf[9]& V11>coltf[10]& V12>coltf[11]& V13>coltf[12]& V14>coltf[13]& V15>coltf[14]& V16>coltf[15]& V17>coltf[16]& V18>coltf[17]& V19>coltf[18]& V20>coltf[19]& V21>coltf[20]& V22>coltf[21]& V23>coltf[22]& V24>coltf[23]& V25>coltf[24])
