@@ -65,6 +65,7 @@ plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="Fungi 10days, lo
 #VIZ
 
 #http://cgrlucb.wikispaces.com/edgeR+spring2013
+library(RColorBrewer)
 colors <- brewer.pal(9, "Set1")
 
 #If we want the normalized pseudo-counts, useful for instance for cluster analysis,
