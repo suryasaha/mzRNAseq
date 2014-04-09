@@ -13,8 +13,13 @@
 mzCounts <- read.delim("maize_counts_noaxenic_noheader.txt",header=FALSE,row.names=1)
 hist(floor(colSums(mzCounts)), labels=TRUE,xlab="Reads in sample",
      main="Histogram of reads mapped per sample")
-coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib
-hist(coltf, labels=TRUE,xlab="Million reads in sample",main="Histogram of reads mapped per sample")
+coltf = floor(colSums(mzCounts) /1e06) #mill reads per lib, could have used cpm()
+hist(coltf, labels=TRUE,xlab="Million reads in sample",
+     main="Histogram of reads mapped per sample")
+
+#boxplot of all counts
+boxplot(mzCounts,main="Spread of all counts per library - maize", las=2)
+
 
 #filter out low counts
 #removing reads with < 1 read/million reads in library
@@ -35,6 +40,8 @@ collabels_ord = c("3d1", "3d2", "3d3", "3dctrl1", "3dctrl2" ,"3dctrl3",
                   "5d1", "5d2", "5d3", "5dctrl1", "5dctrl2" ,"5dctrl3", 
                   "7d1", "7d2", "7d3", "7dctrl1", "7dctrl2" ,"7dctrl3", 
                   "10d1", "10d2", "10d3", "10dctrl1", "10dctrl2" ,"10dctrl3")
+
+boxplot(mzCountsCln,main="Spread of cleaned counts per library - maize", las=2)
 
 #correlation matrix
 library("lattice")
