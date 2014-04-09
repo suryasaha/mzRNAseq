@@ -55,14 +55,22 @@ barplot(colSums(mzCountsCln),names.arg=groups, xlab="Library name", ylab="Read c
 library("edgeR")
 dge <- DGEList(count=mzCountsCln,group=groups)
 dge <- calcNormFactors(dge) # normalize libs to prevent over expressed genes from blanking out rest
-#REDO barplots, err in x labels due to sorted groups
-barplot(dge$counts,names.arg=groups,las=2,main="Normalized maize counts per library")
-plotMDS(dge,labels=groups,col=c("darkblue","lightblue","darkgreen","lightgreen","darkred","red","black","gray")[factor(groups)]) #diff colors for each group
+#REDOing barplots, err in x labels due to sorted groups
+barplot(dge$counts,las=2,main="Normalized total counts per library - maize")
+
+#http://cgrlucb.wikispaces.com/edgeR+spring2013
+library(RColorBrewer)
+colors <- brewer.pal(9, "Set1")
+scale = dge$samples$lib.size * dge$samples$norm.factors
+normCounts = round(t(t(dge$counts)/scale) * mean(scale))
+boxplot(log2(normCounts+1), las=2, col=colors[dge$samples$group],main="Spread of normalized counts per library - maize")
+
+plotMDS(dge,labels=groups,col=c("darkblue","lightblue","darkgreen","lightgreen","darkred","red","black","gray")[factor(groups)], main="PCA of maize RNAseq") #diff colors for each group
 
 dge <- estimateCommonDisp(dge) # Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all tags
 dge <- estimateTagwiseDisp(dge) # Estimates tagwise dispersion values by an empirical Bayes method based on weighted conditional maximum likelihood.
-plotMeanVar(dge,show.tagwise.vars=TRUE,NBline=TRUE) #each dot represents the estimated mean and variance for each gene, with binned variances as well as the trended common dispersion overlaid. Explore the mean-variance relationship for DGE data
-plotBCV(dge) #Biological Coefficient of Variation
+plotMeanVar(dge,show.tagwise.vars=TRUE,NBline=TRUE,main="Variance vs Expr for maize transcripts") #each dot represents the estimated mean and variance for each gene, with binned variances as well as the trended common dispersion overlaid. Explore the mean-variance relationship for DGE data
+plotBCV(dge,main="maize BCV vs Counts per Million") #Plots genewise biological coefficient of variation (BCV) against gene abundance (in log2 counts per million).
 
 dge_3 = exactTest(dge,pair=c('3d','3dctrl'))# Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts
 dge_5 = exactTest(dge,pair=c('5d','5dctrl'))
@@ -80,7 +88,9 @@ hv <- heatmap(dge_3_tt_matrix, col = cm.colors(256), scale = "column",
               RowSideColors = rc, ColSideColors = cc, margins = c(5,10),
               xlab = " variables", ylab =  "Genes",
               main = "heatmap ")
+library("gplots")
 heatmap.2(dge_3_tt_matrix) #better, should try for pval < .05 only
+
 
 dge_5_tt = topTags(dge_5,n=nrow(dge_5))
 dge_7_tt = topTags(dge_7,n=nrow(dge_7))
