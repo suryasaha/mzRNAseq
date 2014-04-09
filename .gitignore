@@ -1,0 +1,9 @@
+.RData
+.Rhistory
+.Rproj.user/
+RJN_GT_Setur_Maize.Rproj
+*.csv
+*.txt
+images/
+rstudio_workspace.RData
+*.png
