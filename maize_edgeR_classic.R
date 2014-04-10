@@ -94,19 +94,8 @@ dge_7 = exactTest(dge,pair=c('7d','7dctrl'))
 dge_10 = exactTest(dge,pair=c('10d','10dctrl'))
 
 dge_3_tt = topTags(dge_3,n=nrow(dge_3)) #Extracts the top DE tags in a data frame for a given pair of groups, ranked by p-value or absolute log-fold change
-dge_3_tt_matrix = as.matrix(dge_3_tt$table)
-rc <- rainbow(nrow(dge_3_tt_matrix), start = 0, end = .3)
-cc <- rainbow(ncol(dge_3_tt_matrix), start = 0, end = .3)
-#poor viz, first try
-cc <- rainbow(ncol(dge_3_tt_matrix), start = 0, end = .3)
-rc <- rainbow(nrow(dge_3_tt_matrix), start = 0, end = .3)
-hv <- heatmap(dge_3_tt_matrix, col = cm.colors(256), scale = "column",
-              RowSideColors = rc, ColSideColors = cc, margins = c(5,10),
-              xlab = " variables", ylab =  "Genes",
-              main = "heatmap ")
-library("gplots")
-heatmap.2(dge_3_tt_matrix) #better, should try for pval < .05 only
-
+# > dim(dge_3_tt[dge_3_tt$table$FDR < .05,])
+# [1] 12530     4
 
 dge_5_tt = topTags(dge_5,n=nrow(dge_5))
 dge_7_tt = topTags(dge_7,n=nrow(dge_7))
@@ -115,12 +104,32 @@ dge_10_tt = topTags(dge_10,n=nrow(dge_10))
 dge_nc <- cpm(dge,normalized.lib.sizes=TRUE) #Computes counts per million (CPM)
 head(dge_nc[rownames(dge_3_tt$table),order(groups)],5) # depth-adjusted reads per million for some of the top 5 differentially expressed genes
 
-plotSmear(dge,de.tags=rownames(dge_3_tt$table$FDR < .05),main="3days, log-Fold Change versus log-Concentration for FDR < .05")
-plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="5days, log-Fold Change versus log-Concentration for FDR < .05")
-plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="7days, log-Fold Change versus log-Concentration for FDR < .05")
-plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="10days, log-Fold Change versus log-Concentration for FDR < .05")
+plotSmear(dge,de.tags=rownames(dge_3_tt$table$FDR < .05),main="3days, log-Fold Change vs log-Conc, FDR < .05")
+plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="5days, log-Fold Change vs log-Conc, FDR < .05")
+plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="7days, log-Fold Change vs log-Conc, FDR < .05")
+plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="10days, log-Fold Change vs log-Conc, FDR < .05")
 
-write.csv(dge_3_tt$table, file="3d_alltags_edgeR.csv")
-write.csv(dge_5_tt$table, file="5d_alltags_edgeR.csv")
-write.csv(dge_7_tt$table, file="7d_alltags_edgeR.csv")
-write.csv(dge_10_tt$table, file="10d_alltags_edgeR.csv")
+write.csv(dge_3_tt$table, file="edgeR_maize_3d_alltags.csv")
+write.csv(dge_5_tt$table, file="edgeR_maize_5d_alltags.csv")
+write.csv(dge_7_tt$table, file="edgeR_maize_7d_alltags.csv")
+write.csv(dge_10_tt$table, file="edgeR_maize_10d_alltags.csv")
+
+#TODO for prez
+hist(dge_3_tt$table$FDR)
+hist(dge_3_tt$table$FDR[dge_3_tt$table$FDR < .05])#only , .05
+dge_3_tt_matrix = as.matrix(dge_3_tt$table)
+rc <- rainbow(nrow(dge_3_tt_matrix), start = 0, end = .3)
+cc <- rainbow(ncol(dge_3_tt_matrix), start = 0, end = .3)
+#poor viz, first try
+hv <- heatmap(dge_3_tt_matrix, col = cm.colors(256), scale = "column",
+              RowSideColors = rc, ColSideColors = cc, margins = c(5,10),
+              xlab = " variables", ylab =  "Transcripts",
+              main = "heatmap of all transcripts")
+heatmap(dge_3_tt[dge_3_tt$table$FDR < .05,], col = cm.colors(256), scale = "column",
+        RowSideColors = rc, ColSideColors = cc, margins = c(5,10),
+        xlab = " variables", ylab =  "Transcripts",
+        main = "heatmap of all transcripts")
+
+library("gplots")
+heatmap.2(dge_3_tt[dge_3_tt$table$FDR < .05,]) #better, should try for pval < .05 only
+
