@@ -87,10 +87,10 @@ plotSmear(dge,de.tags=rownames(dge_5_tt$table$FDR < .05),main="Fungi 5d, log-Fol
 plotSmear(dge,de.tags=rownames(dge_7_tt$table$FDR < .05),main="Fungi 7d, log-Fold Change vs log-Conc FDR < .05")
 plotSmear(dge,de.tags=rownames(dge_10_tt$table$FDR < .05),main="Fungi 10d, log-Fold Change vs log-Conc FDR < .05")
 
-write.csv(dge_3_tt$table, file="edgeR_fungi_3d_alltags.csv")
-write.csv(dge_5_tt$table, file="edgeR_fungi_5d_alltags.csv")
-write.csv(dge_7_tt$table, file="edgeR_fungi_7d_alltags.csv")
-write.csv(dge_10_tt$table, file="edgeR_fungi_10d_alltags.csv")
+write.csv(dge_3_tt$table, file="edgeR_fungi_3d_alltags_refiltered.csv")
+write.csv(dge_5_tt$table, file="edgeR_fungi_5d_alltags_refiltered.csv")
+write.csv(dge_7_tt$table, file="edgeR_fungi_7d_alltags_refiltered.csv")
+write.csv(dge_10_tt$table, file="edgeR_fungi_10d_alltags_refiltered.csv")
 
 #shell
 # awk -F"," '{if($4 < .05) print }' fungi_3d_alltags_edgeR.csv | wc -l
