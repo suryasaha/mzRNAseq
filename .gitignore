@@ -7,3 +7,4 @@ RJN_GT_Setur_Maize.Rproj
 images/
 rstudio_workspace.RData
 *.png
+deseq_maize.R
