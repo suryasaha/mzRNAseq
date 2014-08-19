@@ -33,6 +33,7 @@ boxplot(fnCounts,main="Spread of all counts per library - St28A", las=2)
 #3 being the (min) number of replicates
 # > dim(fnCounts[rowSums(cpm(fnCounts) >1) >=3,])
 # [1] 9856   15
+library("edgeR")
 fnCountsCln = fnCounts[rowSums(cpm(fnCounts) >1) >=3,] #get subset
 boxplot(fnCountsCln,main="Spread of filtered counts per library - St28a", las=2)
 
@@ -43,7 +44,6 @@ barplot(colSums(fnCountsCln),names.arg=groups, xlab="Library name", ylab="Read c
         main="Nof reads mapped per sample filtered- St28A")
 
 #edgeR
-library("edgeR")
 dge <- DGEList(count=fnCountsCln,group=groups)
 names(dge)
 #[1] "counts"             "samples"            "common.dispersion"  "pseudo.counts"      "AveLogCPM"         
