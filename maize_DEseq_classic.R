@@ -20,7 +20,8 @@ design = data.frame(row.names = colnames (mzCounts),
 library("edgeR")
 keep = rowSums (cpm(mzCounts)>1) >= 24
 dim(mzCounts[keep, ]) 
-[1] 17357    24
+#[1] 17357    24
+#filter out low counts
 mzCountsFl = mzCounts[keep, ]
 
 #quantile counts just to compare, look
@@ -31,5 +32,6 @@ table(use)
 #use
 #FALSE  TRUE 
 #31778 31762 
+
 
 
