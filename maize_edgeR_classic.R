@@ -1,5 +1,5 @@
 # PPath@Cornell
-# Surya Saha ss2489@cornell.edu
+# Surya Saha ss2489 at cornell dot edu
 # Feb 15, 2014
 
 
