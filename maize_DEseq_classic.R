@@ -18,20 +18,21 @@ design = data.frame(row.names = colnames (mzCounts),
 #filtering: DESeq suggests using a quantile method. Instead I'll use the method used with edgeR for comparison purposes.
 #removing genes with < 1 read/million reads in every library, 24 libs
 library("edgeR")
-keep = rowSums (cpm(mzCounts)>1) >= 24
-dim(mzCounts[keep, ]) 
+keepcpm = rowSums (cpm(mzCounts)>1) >= 24
+dim(mzCounts[keepcpm, ]) 
 #[1] 17357    24
 #filter out low counts
-mzCountsFl = mzCounts[keep, ]
+mzCountsFlCPM = mzCounts[keepcpm, ]
 
 #quantile counts just to compare, look
 rs <- rowSums(mzCounts)
+#remove the genes in the lowest 50% quantile (as indicated by the parameter theta)
 theta <- 0.5
-use <- rs >quantile(rs, probs = theta)
-table(use)
+keeptheta <- rs >quantile(rs, probs = theta)
+table(keeptheta)
 #use
 #FALSE  TRUE 
 #31778 31762 
-
+mzCountsFlTheta = mzCounts[keeptheta,]
 
 
