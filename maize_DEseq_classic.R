@@ -106,10 +106,21 @@ res3 = nbinomTest (cdsCPMBlindLocal, "3d", "3dctrl")
 
 #MA-plots, i.e. a scatter plot of logarithmic fold changes (on the y-axis) 
 #versus the mean of normalized counts (on the x-axis).
-plotMA(res10,main='Maize day 10 DiffExpr vs Expr Strength')
-plotMA(res7,main='Maize day 7 DiffExpr vs Expr Strength')
-plotMA(res5,main='Maize day 5 DiffExpr vs Expr Strength')
-plotMA(res3,main='Maize day 3 DiffExpr vs Expr Strength')
+plotMA(res10,main='Maize day 10 CPM>1 DiffExpr vs Expr Strength')
+plotMA(res7,main='Maize day 7 CPM>1 DiffExpr vs Expr Strength')
+plotMA(res5,main='Maize day 5 CPM>1 DiffExpr vs Expr Strength')
+plotMA(res3,main='Maize day 3 CPM>1 DiffExpr vs Expr Strength')
+
+
+dim(res10[which(res10$padj < 0.1),])
+#[1] 3763    8
+head(res10[order(res10$log2FoldChange, decreasing = TRUE),])
+
+write.csv(res10,"maize_10d_alltags_deseq_cpm.csv")
+write.csv(res7,"maize_7d_alltags_deseq_cpm.csv")
+write.csv(res5,"maize_5d_alltags_deseq_cpm.csv")
+write.csv(res3,"maize_3d_alltags_deseq_cpm.csv")
+
 
 ##### CPM>1 filtration, per-condition, parametric - Abandoned ####
 
@@ -118,5 +129,51 @@ plotMA(res3,main='Maize day 3 DiffExpr vs Expr Strength')
 #   Use 'estimateDispersions' with 'method="blind"' (or "pooled") before calling 'getVarianceStabilizedData'
 # Abandoned per-condition method as varianceStabilizingTransformation requires a blind estimate 
 # of the variance function ( i.e., one ignoring conditions)
+
+
+####### Theta 0.5 filtration, blind, paramentic fit #########
+
+cdsTheta = newCountDataSet(mzCountsFlTheta,condition)
+cdsTheta = estimateSizeFactors (cdsTheta) #est normalization factors
+sizeFactors(cdsTheta)
+# OYNG      OYNH      OYNN      OYNO      OYNP      OYNS      OYNT      OYNU      OYNW 
+# 1.4289807 0.9731867 1.2119138 1.1110971 0.6860478 0.9893979 0.8677988 1.1138187 0.9014228 
+# OYNX      OYNY      OYNZ      OYOA      OYOB      OYOC      OYON      OYOP      OYOS 
+# 0.6280902 0.6674862 0.9946133 0.9304562 1.0580560 0.8776981 1.3523209 1.4490049 1.0833369 
+# OYOT      OYOU      OYOW      OYOX      OYOY      OYOZ 
+# 1.3847217 1.5727752 0.5850125 1.0949113 0.9989436 1.2217337
+
+cdsThetaBlind = estimateDispersions(cdsTheta, method = "blind",sharingMode = "fit-only", fitType="local") 
+str(fitInfo(cdsThetaBlind))
+# $ perGeneDispEsts: num [1:31762] 0.3556 0.5104 0.1812 0.0946 0.2485 ...
+# $ dispFunc       :function (q)  
+#   ..- attr(*, "fitType")= chr "local"
+# $ fittedDispEsts : num [1:31762] 0.234 0.29 0.277 0.225 0.281 ...
+# $ df             : num 23
+# $ sharingMode    : chr "fit-only"
+
+head(fData(cdsThetaBlind))
+# disp_blind
+# AC147602.5_FGT004  0.2337891
+# AC148152.3_FGT005  0.2903896
+# AC148152.3_FGT008  0.2765086
+plotDispEsts(cdsThetaBlind, main='Maize cdsTheta 0.5 Blind method Local fit Dispersions')
+
+#For PCA plot
+vsdThetaBlind = varianceStabilizingTransformation (cdsThetaBlind)
+plotPCA(vsdThetaBlind,intgroup=c("condition"))
+
+#generate DE tables (comparison is expt to control)
+rest10 = nbinomTest (cdsThetaBlind, "10d", "10dctrl")
+rest7 = nbinomTest (cdsThetaBlind, "7d", "7dctrl")
+rest5 = nbinomTest (cdsThetaBlind, "5d", "5dctrl")
+rest3 = nbinomTest (cdsThetaBlind, "3d", "3dctrl")
+
+#MA-plots, i.e. a scatter plot of logarithmic fold changes (on the y-axis) 
+#versus the mean of normalized counts (on the x-axis).
+plotMA(rest10,main='Maize day 10 theta 0.5 DiffExpr vs Expr Strength')
+plotMA(rest7,main='Maize day 7 theta 0.5 DiffExpr vs Expr Strength')
+plotMA(rest5,main='Maize day 5 theta 0.5 DiffExpr vs Expr Strength')
+plotMA(rest3,main='Maize day 3 theta 0.5 DiffExpr vs Expr Strength')
 
 
