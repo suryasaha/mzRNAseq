@@ -46,7 +46,7 @@ mzCountsFlTheta = mzCounts[keeptheta,]
 library("DESeq") #version 1.16.0
 
 # Trying 2 solutions
-#   filtered using CPM>1, blind method, local fit
+#   filtered using CPM>1, blind method, local fit, sharingMode fit-only
 #   filtered using theta=0.5, blind method, parametric fit
 
 cdsCPM = newCountDataSet(mzCountsFlCPM,condition)
@@ -62,15 +62,11 @@ sizeFactors(cdsCPM)
 ##### CPM>1 filtration, blind, paramentic fit ######
 #cdsCPMFullBlind = estimateDispersions(cdsCPM, method = "blind")
 # Error in parametricDispersionFit(means, disps) : 
-#   Parametric dispersion fit failed. Try a local fit and/or a pooled estimation. (See '?estimateDispersions')
-# In addition: There were 29 warnings (use warnings() to see them)
-# warnings()
-# 28: step size truncated due to divergence
-# 29: glm.fit: algorithm did not converge
+# Parametric dispersion fit failed. Try a local fit and/or a pooled estimation. (See '?estimateDispersions')
+# glm.fit: algorithm did not converge
 #No error if unfiltered counts or relaxed filtering using theta (0.4 or 0.5) are used 
 #for estimating dispersion. Removes genes in the lowest 40% or 50% quantile (as indicated 
-#by the parameter theta). We can use diff starting data sets for edgeR and DEseq and 
-#compare the DE list. Filtering is just a part of the algorithm, not the data itself. 
+#by the parameter theta). Filtering is a part of the algorithm, not the data itself. 
 #=> USING THETA 0.5 also. See Expt log in Evernote for details
 
 ##### CPM>1 filtration, blind, local fit ######
@@ -115,6 +111,8 @@ plotMA(res3,main='Maize day 3 CPM>1 DiffExpr vs Expr Strength')
 dim(res10[which(res10$padj < 0.1),])
 #[1] 3763    8
 head(res10[order(res10$log2FoldChange, decreasing = TRUE),])
+dim(res5[which(res5$padj < 0.1),])
+
 
 write.csv(res10,"maize_10d_alltags_deseq_cpm.csv")
 write.csv(res7,"maize_7d_alltags_deseq_cpm.csv")
@@ -176,4 +174,7 @@ plotMA(rest7,main='Maize day 7 theta 0.5 DiffExpr vs Expr Strength')
 plotMA(rest5,main='Maize day 5 theta 0.5 DiffExpr vs Expr Strength')
 plotMA(rest3,main='Maize day 3 theta 0.5 DiffExpr vs Expr Strength')
 
-
+write.csv(rest10,"maize_10d_alltags_deseq_theta.csv")
+write.csv(rest7,"maize_7d_alltags_deseq_theta.csv")
+write.csv(rest5,"maize_5d_alltags_deseq_theta.csv")
+write.csv(rest3,"maize_3d_alltags_deseq_theta.csv")
