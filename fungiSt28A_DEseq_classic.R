@@ -11,9 +11,11 @@
 
 #data
 fnCounts <- read.delim("fungi_counts_header_nocontrol.txt",header=TRUE,row.names=1)
+# this design trips up nbiomTest in v 1.16.0, using simple condition vector
 design = data.frame(row.names = colnames (fnCounts), 
                     condition = c("3d", "3d", "7d", "7d", "3d", "10d", "10d", "10d", "axenic", "axenic","7d", "axenic", "5d", "5d", "5d"),
                     libType = c("paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired"))
+condition = c("3d", "3d", "7d", "7d", "3d", "10d", "10d", "10d", "axenic", "axenic","7d", "axenic", "5d", "5d", "5d")
 
 #filtering: DESeq suggests using a quantile method. Instead I'll use the method used with edgeR for comparison purposes.
 #removing genes with < 1 read/million reads in every library, 15 libs
