@@ -8,14 +8,19 @@
 #grep -v '^jgi' counts.txt > maize_counts.txt
 #cut --complement -f 2,3,19,20,22  maize_counts.txt > maize_counts_noaxenic.txt
 
+#################################################################
 #data
+#################################################################
+
 mzCounts <- read.delim("maize_counts_noaxenic.txt",header=TRUE,row.names=1)
-design = data.frame(row.names = colnames (mzCounts), 
-                    condition = c("3d", "3d", "7d", "7d", "3dctrl", "10dctrl", "3dctrl", "10dctrl", "3d", "10d", "5dctrl", "3dctrl", "10dctrl", "10d", "10d", "7d", "5d", "5d", "5dctrl", "5dctrl", "7dctrl", "7dctrl", "7dctrl", "5d" ),
-                    libType = c("paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired"))
+# this design trips up nbiomTest, using simple condition vector
+# design = data.frame(row.names = colnames (mzCounts), 
+#                     condition = c("3d", "3d", "7d", "7d", "3dctrl", "10dctrl", "3dctrl", "10dctrl", "3d", "10d", "5dctrl", "3dctrl", "10dctrl", "10d", "10d", "7d", "5d", "5d", "5dctrl", "5dctrl", "7dctrl", "7dctrl", "7dctrl", "5d" ),
+#                     libType = c("paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired","paired"))
+condition = c("3d", "3d", "7d", "7d", "3dctrl", "10dctrl", "3dctrl", "10dctrl", "3d", "10d", "5dctrl", "3dctrl", "10dctrl", "10d", "10d", "7d", "5d", "5d", "5dctrl", "5dctrl", "7dctrl", "7dctrl", "7dctrl", "5d" )
 
 
-#filtering: DESeq suggests using a quantile method. Instead I'll use the method used with edgeR for comparison purposes.
+########### filtering ##############
 #removing genes with < 1 read/million reads in every library, 24 libs
 library("edgeR")
 keepcpm = rowSums (cpm(mzCounts)>1) >= 24
@@ -24,7 +29,7 @@ dim(mzCounts[keepcpm, ])
 #filter out low counts
 mzCountsFlCPM = mzCounts[keepcpm, ]
 
-#quantile counts just to compare, look
+#quantile counts 
 rs <- rowSums(mzCounts)
 #remove the genes in the lowest 50% quantile (as indicated by the parameter theta)
 theta <- 0.5
@@ -34,5 +39,84 @@ table(keeptheta)
 #FALSE  TRUE 
 #31778 31762 
 mzCountsFlTheta = mzCounts[keeptheta,]
+
+#################################################################
+#DESeq 
+#################################################################
+library("DESeq") #version 1.16.0
+
+# Trying 2 solutions
+#   filtered using CPM>1, blind method, local fit
+#   filtered using theta=0.5, blind method, parametric fit
+
+cdsCPM = newCountDataSet(mzCountsFlCPM,condition)
+cdsCPM = estimateSizeFactors (cdsCPM) #est normalization factors
+sizeFactors(cdsCPM)
+# OYNG      OYNH      OYNN      OYNO      OYNP      OYNS      OYNT      OYNU      OYNW 
+# 1.4492061 0.9644800 1.2003134 1.1093406 0.6829350 0.9734716 0.8719655 1.0909045 0.8871821 
+# OYNX      OYNY      OYNZ      OYOA      OYOB      OYOC      OYON      OYOP      OYOS 
+# 0.6131025 0.6627994 1.0035467 0.9227379 1.0604205 0.8729568 1.3505564 1.4293639 1.0865230 
+# OYOT      OYOU      OYOW      OYOX      OYOY      OYOZ 
+# 1.3513753 1.5297504 0.5773062 1.0842262 0.9711836 1.2050516
+
+##### CPM>1 filtration, blind, paramentic fit ######
+#cdsCPMFullBlind = estimateDispersions(cdsCPM, method = "blind")
+# Error in parametricDispersionFit(means, disps) : 
+#   Parametric dispersion fit failed. Try a local fit and/or a pooled estimation. (See '?estimateDispersions')
+# In addition: There were 29 warnings (use warnings() to see them)
+# warnings()
+# 28: step size truncated due to divergence
+# 29: glm.fit: algorithm did not converge
+#No error if unfiltered counts or relaxed filtering using theta (0.4 or 0.5) are used 
+#for estimating dispersion. Removes genes in the lowest 40% or 50% quantile (as indicated 
+#by the parameter theta). We can use diff starting data sets for edgeR and DEseq and 
+#compare the DE list. Filtering is just a part of the algorithm, not the data itself. 
+#=> USING THETA 0.5 also. See Expt log in Evernote for details
+
+##### CPM>1 filtration, blind, local fit ######
+
+#Using local fit instead of blind. Used locfit package to fit a dispersion-mean relation
+#using sharingMode = "fit-only" to avoid nbiomTest warning (see Expt log)
+cdsCPMBlindLocal = estimateDispersions(cdsCPM, method = "blind",sharingMode = "fit-only", fitType="local") 
+str(fitInfo(cdsCPMBlindLocal))
+# List of 5
+# $ perGeneDispEsts: num [1:17357] 0.349 0.1807 0.0937 0.2456 0.0959 ...
+# $ dispFunc       :function (q)  
+#   ..- attr(*, "fitType")= chr "local"
+# $ fittedDispEsts : num [1:17357] 0.196 0.273 0.175 0.113 0.176 ...
+# $ df             : num 23
+# $ sharingMode    : chr "fit-only"
+
+head(fData(cdsCPMBlindLocal))
+# disp_blind
+# AC147602.5_FGT004  0.1960810
+# AC148152.3_FGT008  0.2734398
+# AC148167.6_FGT001  0.1752220
+plotDispEsts(cdsCPMBlindLocal, main='Maize cdsCPM>1 Blind method Local fit Dispersions')
+
+#For PCA plot
+vsdCPMBlindLocal = varianceStabilizingTransformation (cdsCPMBlindLocal)
+plotPCA(vsdCPMBlindLocal,intgroup=c("condition"))
+
+#generate DE tables (comparison is expt to control)
+res10 = nbinomTest (cdsCPMBlindLocal, "10d", "10dctrl")
+res7 = nbinomTest (cdsCPMBlindLocal, "7d", "7dctrl")
+res5 = nbinomTest (cdsCPMBlindLocal, "5d", "5dctrl")
+res3 = nbinomTest (cdsCPMBlindLocal, "3d", "3dctrl")
+
+#MA-plots, i.e. a scatter plot of logarithmic fold changes (on the y-axis) 
+#versus the mean of normalized counts (on the x-axis).
+plotMA(res10,main='Maize day 10 DiffExpr vs Expr Strength')
+plotMA(res7,main='Maize day 7 DiffExpr vs Expr Strength')
+plotMA(res5,main='Maize day 5 DiffExpr vs Expr Strength')
+plotMA(res3,main='Maize day 3 DiffExpr vs Expr Strength')
+
+##### CPM>1 filtration, per-condition, parametric - Abandoned ####
+
+#vsdCPMcondPerCondLocal = varianceStabilizingTransformation (cdsCPMcondPerCondLocal)
+# Error in getVarianceStabilizedData(cds) : 
+#   Use 'estimateDispersions' with 'method="blind"' (or "pooled") before calling 'getVarianceStabilizedData'
+# Abandoned per-condition method as varianceStabilizingTransformation requires a blind estimate 
+# of the variance function ( i.e., one ignoring conditions)
 
 
