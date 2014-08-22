@@ -108,6 +108,15 @@ plotMA(res5,main='Maize day 5 CPM>1 DiffExpr vs Expr Strength')
 plotMA(res3,main='Maize day 3 CPM>1 DiffExpr vs Expr Strength')
 
 
+#Histogram of p-values 
+hist(res3$pval, breaks=100, col="skyblue", border="slateblue", main="day 3 CPM>1 DEG p values")
+hist(res3$padj, breaks=100, col="skyblue", border="slateblue", main="day 3 CPM>1 DEG adj p values")
+hist(res5$pval, breaks=100, col="skyblue", border="slateblue", main="day 5 CPM>1 DEG p values")
+hist(res5$padj, breaks=100, col="skyblue", border="slateblue", main="day 5 CPM>1 DEG adj p values")
+hist(res7$pval, breaks=100, col="skyblue", border="slateblue", main="day 7 CPM>1 DEG p values")
+hist(res10$pval, breaks=100, col="skyblue", border="slateblue", main="day 10 CPM>1 DEG p values")
+
+
 dim(res10[which(res10$padj < 0.1),])
 #[1] 3763    8
 head(res10[order(res10$log2FoldChange, decreasing = TRUE),])
@@ -173,6 +182,13 @@ plotMA(rest10,main='Maize day 10 theta 0.5 DiffExpr vs Expr Strength')
 plotMA(rest7,main='Maize day 7 theta 0.5 DiffExpr vs Expr Strength')
 plotMA(rest5,main='Maize day 5 theta 0.5 DiffExpr vs Expr Strength')
 plotMA(rest3,main='Maize day 3 theta 0.5 DiffExpr vs Expr Strength')
+
+#Histogram of p-values 
+hist(rest3$pval, breaks=100, col="skyblue", border="slateblue", main="day 3 Theta 0.5 DEG p values")
+hist(res3$padj, breaks=100, col="skyblue", border="slateblue", main="day 3 Theta 0.5 DEG adj p values")
+hist(res5$pval, breaks=100, col="skyblue", border="slateblue", main="day 5 Theta 0.5 DEG p values")
+hist(res5$padj, breaks=100, col="skyblue", border="slateblue", main="day 5 Theta 0.5 DEG adj p values")
+
 
 write.csv(rest10,"maize_10d_alltags_deseq_theta.csv")
 write.csv(rest7,"maize_7d_alltags_deseq_theta.csv")
