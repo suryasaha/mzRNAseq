@@ -1,5 +1,6 @@
 # PPath@Cornell
 # Surya Saha ss2489 at cornell dot edu
+# Adapted from Tyr's script https://github.com/nelsonlab/rnaseq/blob/master/deseq2_code_tyr.R
 # Aug 19, 2014
 
 #63540 maize transcripts in 24 diff conditions ( 4 time points x 3 reps x ( 1 expt + 1 control )).
@@ -22,3 +23,29 @@ dim(metadata)
 # [1] 27  4
 dim(mzMeta)
 # [1] 24  4
+
+###### Filtering ########
+
+#removing genes with < 1 read/million reads in every library, 24 libs
+library("edgeR")
+keepcpm = rowSums (cpm(mzCounts)>1) >= 24
+dim(mzCounts[keepcpm, ])
+#[1] 17357 24
+#filter out low counts
+mzCountsFlCPM = mzCounts[keepcpm, ]
+
+#quantile counts
+rs <- rowSums(mzCounts)
+#remove the genes in the lowest 50% quantile (as indicated by the parameter theta)
+theta <- 0.5
+keeptheta <- rs >quantile(rs, probs = theta)
+table(keeptheta)
+#use
+#FALSE TRUE
+#31778 31762
+mzCountsFlTheta = mzCounts[keeptheta,]
+
+
+
+
+
