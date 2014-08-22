@@ -90,7 +90,13 @@ nrow(resmzCountFlCPM3[which(resmzCountFlCPM3$padj <= 0.05),])
 nrow(resmzCountFlCPM7[which(resmzCountFlCPM7$padj <= 0.05),])
 # [1] 9483
 
-
+# MA plots
+png("/home/surya/work/RJN_GT_Setur_Maize/R/maize_deseq2_plotMA_ddsmzCountFlCPM3.png")
+plotMA(resmzCountFlCPM3, main = "maize_deseq2_plotMA_ddsmzCountFlCPM3", ylim = c(-2,2))
+dev.off()
+png("/home/surya/work/RJN_GT_Setur_Maize/R/maize_deseq2_plotMA_ddsmzCountFlCPM5.png")
+plotMA(resmzCountFlCPM5, main = "maize_deseq2_plotMA_ddsmzCountFlCPM5", ylim = c(-2,2))
+dev.off()
 
 
 ddsmzCountFlTheta = DESeqDataSetFromMatrix(
@@ -118,6 +124,7 @@ nrow(resmzCountFlTheta7[which(resmzCountFlTheta7$padj <= 0.05),])
 resmzCountFlTheta5 = results(ddsmzCountFlTheta, contrast = c("condition", "5day", "5daycontrol"))
 nrow(resmzCountFlTheta5[which(resmzCountFlTheta5$padj <= 0.05),])
 # [1] 7097
+# low count again!
 resmzCountFlTheta3 = results(ddsmzCountFlTheta, contrast = c("condition", "3day", "3daycontrol"))
 nrow(resmzCountFlTheta3[which(resmzCountFlTheta3$padj <= 0.05),])
 # [1] 14678
