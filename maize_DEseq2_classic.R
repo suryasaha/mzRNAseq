@@ -50,6 +50,7 @@ mzCountsFlTheta = mzCounts[keeptheta,]
 #################################################################
 library("DESeq2") #version 1.4.5
 
+########### CPM < 3 ################
 ddsmzCountFlCPM = DESeqDataSetFromMatrix(
   countData = mzCountsFlCPM,
   colData = mzMeta,
@@ -98,6 +99,13 @@ png("/home/surya/work/RJN_GT_Setur_Maize/R/maize_deseq2_plotMA_ddsmzCountFlCPM5.
 plotMA(resmzCountFlCPM5, main = "maize_deseq2_plotMA_ddsmzCountFlCPM5", ylim = c(-2,2))
 dev.off()
 
+#CSV
+write.csv(resmzCountFlCPM3,"maize_3d_alltags_deseq2_cpm.csv")
+write.csv(resmzCountFlCPM5,"maize_5d_alltags_deseq2_cpm.csv")
+write.csv(resmzCountFlCPM7,"maize_7d_alltags_deseq2_cpm.csv")
+write.csv(resmzCountFlCPM10,"maize_10d_alltags_deseq2_cpm.csv")
+
+########### Theta < 0.5 ################
 
 ddsmzCountFlTheta = DESeqDataSetFromMatrix(
   countData = mzCountsFlTheta,
@@ -117,7 +125,6 @@ dev.off()
 resmzCountFlTheta10 = results(ddsmzCountFlTheta, contrast = c("condition", "10day", "10daycontrol"))
 nrow(resmzCountFlTheta10[which(resmzCountFlTheta10$padj <= 0.05),])
 # [1] 14582
-nrow(resmzCountFlTheta7[which(resmzCountFlTheta7$padj <= 0.05),])
 resmzCountFlTheta7 = results(ddsmzCountFlTheta, contrast = c("condition", "7day", "7daycontrol"))
 nrow(resmzCountFlTheta7[which(resmzCountFlTheta7$padj <= 0.05),])
 # [1] 14258
@@ -129,5 +136,10 @@ resmzCountFlTheta3 = results(ddsmzCountFlTheta, contrast = c("condition", "3day"
 nrow(resmzCountFlTheta3[which(resmzCountFlTheta3$padj <= 0.05),])
 # [1] 14678
 
+#CSV
+write.csv(resmzCountFlCPM3,"maize_3d_alltags_deseq2_theta.csv")
+write.csv(resmzCountFlCPM5,"maize_5d_alltags_deseq2_theta.csv")
+write.csv(resmzCountFlCPM7,"maize_7d_alltags_deseq2_theta.csv")
+write.csv(resmzCountFlCPM10,"maize_10d_alltags_deseq2_theta.csv")
 
 
